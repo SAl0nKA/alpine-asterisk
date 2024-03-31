@@ -6,8 +6,6 @@ services:
     image: alpine-asterisk
     restart: always
     container_name: alpine-asterisk
-#    env_file:
-#      - ./.env
     command: > 
       sh -c 'cd /opt/scripts &&
             python3 /opt/scripts/create-sample-config.py &&
@@ -22,28 +20,3 @@ services:
     volumes:
       - "/etc/asterisk:/etc/asterisk:rw"
       - "./scripts:/opt/scripts:r"
-#    networks:
-#      default:
-#        ipv4_address: 192.168.235.69
-
-#networks:
-#  default:
-#    ipam:
-#      config:
-#      - subnet: 192.168.235.0/24
-
-#       - "./copy-config.sh:/usr/local/bin/copy-config.sh"
-#    command: ["sh", "/usr/local/bin/copy-config.sh"]
-#    command: ["asterisk", "-f"]
-
-#    initialize-config:
-#      image: asterisk
-#      command: sh -c "cp -R /etc/asterisk/* /initialized-config/"
-#      volumes:
-#        - "/home/niki/balalajka/config:/initialized-config:rw"
-#      depends_on:
-#        - asterisk
-
-
-#       - "${PWD}/etc/asterisk/:/etc/asterisk:rw"
-#       - "${PWD}/log:/var/log/asterisk:rw"
