@@ -3,6 +3,8 @@ import hashlib
 import os
 
 CONFIG_PATH = "/etc/asterisk/pjsip.conf"
+#for testing purposes
+# CONFIG_PATH = "./config/pjsip.conf"
 
 
 class User:
@@ -15,7 +17,7 @@ class User:
         if self.md5:
             return hashlib.md5(f"{self.name}:asterisk:{password}".encode()).hexdigest()
         else:
-            return self.password
+            return password
 
     def print_user(self):
         print(f"{self.name}\n{self.password}\n")
@@ -42,50 +44,47 @@ username={self.name}
 password={self.password}
 """
 
-    def write_to_config(self):
-        try:
-            with open(CONFIG_PATH, 'a') as file:
-                file.write(self.get_user_pjsip_config())
-            print(f"Config for user {self.name} successfully written")
-        except FileNotFoundError:
-            print("pjsip.conf file not found")
-
-
-def count_lines_in_file():
-    line_count = 0
-    with open(".env", 'r') as file:
-        for _ in file:
-            line_count += 1
-    return line_count
+    def write_to_config(self, file):
+        file.write(self.get_user_pjsip_config())
+        print(f"Config for user {self.name} successfully written.")
 
 
 def main():
-    os.system("pwd")
-    os.system("ls -la")
     load_dotenv()
-    num_of_lines = count_lines_in_file()
-    if num_of_lines % 3 != 0:
-        print("Bad .env file, exiting")
-        return
+    env_variables = os.environ
 
-    num_of_users = int(num_of_lines / 3)
-    print(f'Found {num_of_users} {"user" if num_of_users == 1 else "users"}')
-    with open(CONFIG_PATH, 'r') as file:
+    with open(CONFIG_PATH, 'r+') as file:
         content = file.read()
 
-        for i in range(num_of_users):
-            user = User(os.getenv(f"NAME{i}"), os.getenv(f"PASSWORD{i}"), os.getenv(f"MD5{i}"))
+        i = 0
+        stop_condition = False
+
+        while not stop_condition:
+            name_key = f"NAME{i}"
+            password_key = f"PASSWORD{i}"
+            md5_key = f"MD5{i}"
             i += 1
 
-            found_at = content.find(f"[{user.name}]")
-            if found_at != -1:
-                print(f"User {user.name} found in the existing config, skipping.")
-                return
+            if name_key in env_variables:
+                name_value = os.getenv(name_key)
+                password_value = os.getenv(password_key)
+                if password_value is None:
+                    print(f"Password for user {name_value} not set, skipping.")
+                    continue
+                md5_value = os.getenv(md5_key)
+                if md5_value is None:
+                    print(f"MD5 for user {name_value} not set, using plain text password.")
+                    md5_value = False
 
-            user.write_to_config()
+                user = User(name_value, password_value, md5_value)
+                found_at = content.find(f"[{user.name}]")
+                if found_at != -1:
+                    print(f"User {user.name} found in the existing config, skipping.")
+                    continue
 
-
-#         todo upravenie do pjsip.conf
+                user.write_to_config(file)
+            else:
+                stop_condition = True
 
 
 if __name__ == '__main__':
