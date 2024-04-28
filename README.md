@@ -125,3 +125,6 @@ docker exec -it asterisk... asterisk -rvvvvvvv
 **NOTE:** The name of the running container will contain some generated ID. You can use Tab to fill in the full name.
 
 The images contain tools such as sngrep and nano to easily debug the SIP traffic.
+
+### Changing endpoint template
+You can find the template for user endpoints in `scripts/create-users.py` where you can change it according to your needs.
