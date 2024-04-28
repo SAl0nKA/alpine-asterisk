@@ -8,8 +8,7 @@ RUN apk add nano sngrep
 
 WORKDIR /opt/scripts
 ADD ./scripts/* /opt/scripts
-#todo add using docker compose env
-ADD ./scripts/.env /opt/scripts
+#ADD ./scripts/.env /opt/scripts
 RUN chmod +x parseIP.sh
 WORKDIR /opt/config
 
