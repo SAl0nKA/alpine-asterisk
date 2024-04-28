@@ -3,6 +3,8 @@ version: '3.3'
 services:
   asterisk:
     image: localhost:5000/alpine-asterisk:latest
+    env_file:
+      - ./scripts/.env
     ports:
       - "5060:5060/udp"                     # SIP UDP port
       - "5060:5060"                         # SIP TCP port
